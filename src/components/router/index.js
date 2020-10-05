@@ -13,10 +13,10 @@ Vue.use(VueRouter)
 //创建路由对象
 const routes = [
    
-     {
+    {
          path: '',
         redirect: '/home'
-     },
+    },
     { 
         path: '/home',
         component: Home
@@ -24,10 +24,12 @@ const routes = [
     {
         path: '/category',
         component: Category
-    }, {
+    }, 
+    {
         path: '/cart',
         component: Cart
-    }, {
+    }, 
+    {
         path: '/profile',
         component: Profile
     }
