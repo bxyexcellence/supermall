@@ -21,8 +21,11 @@ export default {
 </script>
 
 <style scoped>
+.feature{
+  width: 100%;
+}
 .feature img{
-  width: auto;
+  width: 100%;
   height: auto;
   max-width: 100%;
 }
