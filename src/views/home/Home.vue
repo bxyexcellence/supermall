@@ -1,15 +1,17 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <home-swiper :banners = "banner"></home-swiper>
-    <home-recommend-view :recommends="recommends"></home-recommend-view>
-    <feature-view class="feature"></feature-view>
-    <tab-control 
-    :title="titles" 
-    class="tab-control"
-    @tabClick="tabClick"
-    ></tab-control>
-    <goods-list :goods="showGoods"></goods-list>
+    <Scroll class="content">
+      <home-swiper :banners = "banner"></home-swiper>
+      <home-recommend-view :recommends="recommends"></home-recommend-view>
+      <feature-view class="feature"></feature-view>
+      <tab-control 
+      :title="titles" 
+      class="tab-control"
+      @tabClick="tabClick"
+      ></tab-control>
+      <goods-list :goods="showGoods"></goods-list>
+    </Scroll>
   </div>
 </template>
 
@@ -21,7 +23,9 @@ import FeatureView from './childCompents/FeatureView';
 import GoodsList from 'components/content/goods/GoodsList';
 
 import NavBar from 'components/common/navbar/NavBar';
-import tabControl from 'components/content/tabControl/tabControl'
+import tabControl from 'components/content/tabControl/tabControl';
+
+import Scroll from 'components/common/scroll/Scroll';
 
 import { getHomeMultidata,getHomeGoods } from "network/home";
 export default {
@@ -32,7 +36,8 @@ export default {
     HomeRecommendView,
     FeatureView,
     tabControl,
-    GoodsList
+    GoodsList,
+    Scroll
   },
   data(){
     return {
@@ -100,6 +105,8 @@ export default {
 <style scoped>
 #home{
   padding-top: 44px;
+  height: 100vh;
+  position: relative;
 }
 .home-nav{
   background-color: var(--color-tint);
@@ -113,5 +120,17 @@ export default {
 .tab-control{
   position: sticky;
   top: 44px;
+}
+/* .content{
+  height: calc(100% - 44px);
+  overflow: hidden;
+} */
+.content{
+  position: absolute;
+  overflow: hidden;
+  top: 44px;
+  bottom: 49px;
+  left: 0;
+  right: 0;
 }
 </style>
