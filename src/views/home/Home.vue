@@ -1,7 +1,7 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <Scroll class="content">
+    <Scroll class="content" ref="Scroll" :probeType="probeType" @scroll="scrollPosition">
       <home-swiper :banners = "banner"></home-swiper>
       <home-recommend-view :recommends="recommends"></home-recommend-view>
       <feature-view class="feature"></feature-view>
@@ -12,6 +12,7 @@
       ></tab-control>
       <goods-list :goods="showGoods"></goods-list>
     </Scroll>
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -24,7 +25,7 @@ import GoodsList from 'components/content/goods/GoodsList';
 
 import NavBar from 'components/common/navbar/NavBar';
 import tabControl from 'components/content/tabControl/tabControl';
-
+import BackTop from '../../components/content/backTop/BackTop';
 import Scroll from 'components/common/scroll/Scroll';
 
 import { getHomeMultidata,getHomeGoods } from "network/home";
@@ -37,7 +38,8 @@ export default {
     FeatureView,
     tabControl,
     GoodsList,
-    Scroll
+    Scroll,
+    BackTop
   },
   data(){
     return {
@@ -50,7 +52,9 @@ export default {
         'new':{'page': 0, 'list':[]},
         'sell':{'page': 0, 'list':[]}
       },
-      currentType:'pop'
+      currentType:'pop',
+      probeType:3,
+      isShowBackTop:false
     }
   },
   created () {
@@ -80,6 +84,14 @@ export default {
           this.currentType = 'sell'
       } */
       this.currentType = Object.keys(this.goods)[i]
+    },
+    backClick(){
+      this.$refs.Scroll.scroll.scrollTo(0,0,500)
+      //console.log(this.$refs.Scroll);
+    },
+    scrollPosition(position){
+      console.log(position);
+      position.y<-1000?this.isShowBackTop = true:this.isShowBackTop = false
     },
     //网络请求
      getHomeMultidata(){
