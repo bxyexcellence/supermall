@@ -62,7 +62,7 @@ export default {
       })
       }
       
-      if(this.pullUpLoad){
+      if(this.pullUp){
         this.scroll.on('pullingUp', () => {
         console.log(1);
         this.$emit('pullingUp')
