@@ -1,15 +1,19 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <Scroll class="content" ref="Scroll" :probeType="probeType" @scroll="scrollPosition">
+    <Scroll class="content" 
+            ref="Scroll" 
+            :probeType="probeType" 
+            @scroll="scrollPosition" 
+            :pullUp="pullUpload"
+            @pullingUp="loadMore">
       <home-swiper :banners = "banner"></home-swiper>
       <home-recommend-view :recommends="recommends"></home-recommend-view>
       <feature-view class="feature"></feature-view>
       <tab-control 
-      :title="titles" 
-      class="tab-control"
-      @tabClick="tabClick"
-      ></tab-control>
+          :title="titles" 
+          @tabClick="tabClick"
+          ></tab-control>
       <goods-list :goods="showGoods"></goods-list>
     </Scroll>
     <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
@@ -25,7 +29,7 @@ import GoodsList from 'components/content/goods/GoodsList';
 
 import NavBar from 'components/common/navbar/NavBar';
 import tabControl from 'components/content/tabControl/tabControl';
-import BackTop from '../../components/content/backTop/BackTop';
+import BackTop from 'components/content/backTop/BackTop';
 import Scroll from 'components/common/scroll/Scroll';
 
 import { getHomeMultidata,getHomeGoods } from "network/home";
@@ -54,7 +58,8 @@ export default {
       },
       currentType:'pop',
       probeType:3,
-      isShowBackTop:false
+      isShowBackTop:false,
+      pullUpload:true
     }
   },
   created () {
@@ -62,6 +67,9 @@ export default {
     this.getHomeGoods('pop');
     this.getHomeGoods('new');
     this.getHomeGoods('sell');
+  /*  this.$bus.$on('goodsImgLoadEvent',()=>{
+      this.$refs.Scroll&&this.$refs.Scroll.scroll.refresh();
+    }) */
 
   },
   computed: {
@@ -69,10 +77,32 @@ export default {
       return this.goods[this.currentType].list
     }
   },
+  mounted () {
+    //const refresh = this.debounce(this.$refs.Scroll&&this.$refs.Scroll.scroll.refresh)
+    this.$bus.$on('goodsImgLoadEvent',()=>{
+      this.$refs.Scroll&&this.$refs.Scroll.scroll.refresh();
+      //refresh();
+    })
+  },
+ /*  activated() {
+    //this.bcFunc 混入进来的
+    this.$bus.$on('goodsImgLoadEvent',()=>{
+      this.$refs.Scroll.scroll.refresh();
+    })
+  }, */
   methods: {
+    /* debounce(func,delay){
+      let timer = null
+      return function() {
+        if(timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+          func.apply(this)
+        }, delay)
+      }
+    }, */
     //事件相关
     tabClick(i){
-      console.log(i);
+      //console.log(i);
       /* switch (i) {
         case 0:
           this.currentType = 'pop';
@@ -84,15 +114,34 @@ export default {
           this.currentType = 'sell'
       } */
       this.currentType = Object.keys(this.goods)[i]
+      console.log( this.currentType);
+      setTimeout(() => {
+        this.$refs.Scroll.scroll.refresh();
+      }, 500);
     },
     backClick(){
       this.$refs.Scroll.scroll.scrollTo(0,0,500)
       //console.log(this.$refs.Scroll);
     },
     scrollPosition(position){
-      console.log(position);
+      //console.log(position);
       position.y<-1000?this.isShowBackTop = true:this.isShowBackTop = false
     },
+    loadMore(){
+
+      this.getHomeGoods(this.currentType);
+      console.log("上拉了");
+      setTimeout(() => {
+        this.$refs.Scroll.scroll.finishPullUp()
+        this.$refs.Scroll.scroll.refresh();
+      }, 500);
+      
+    },
+    
+    
+    
+    
+    
     //网络请求
      getHomeMultidata(){
         getHomeMultidata().then(res => {
@@ -109,6 +158,8 @@ export default {
           this.goods[type].list.push(...res.data.list);
           this.goods[type].page+=1;
         })
+        //console.log(this.$refs.Scroll.scroll);
+        //this.$refs.Scroll.scroll.refresh();
       }
   }
 }
@@ -129,10 +180,10 @@ export default {
   top: 0;
   z-index: 4;
 }
-.tab-control{
+/* .tab-control{
   position: sticky;
   top: 44px;
-}
+} */
 /* .content{
   height: calc(100% - 44px);
   overflow: hidden;
