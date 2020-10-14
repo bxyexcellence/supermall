@@ -1,18 +1,26 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+    <tab-control 
+          :title="titles" 
+          @tabClick="tabClick"
+          class="tabcontrol"
+          v-show="topCheck"
+          ref="tabcontrol2"
+          ></tab-control>
     <Scroll class="content" 
             ref="Scroll" 
             :probeType="probeType" 
             @scroll="scrollPosition" 
             :pullUp="pullUpload"
             @pullingUp="loadMore">
-      <home-swiper :banners = "banner"></home-swiper>
+      <home-swiper :banners = "banner" @swiperimgLoad.once="swiperimgLoad"></home-swiper>
       <home-recommend-view :recommends="recommends"></home-recommend-view>
       <feature-view class="feature"></feature-view>
       <tab-control 
           :title="titles" 
           @tabClick="tabClick"
+          ref="tabcontrol1"
           ></tab-control>
       <goods-list :goods="showGoods"></goods-list>
     </Scroll>
@@ -59,7 +67,9 @@ export default {
       currentType:'pop',
       probeType:3,
       isShowBackTop:false,
-      pullUpload:true
+      pullUpload:true,
+      tabControloffsetTop:0,
+      topCheck:false
     }
   },
   created () {
@@ -114,6 +124,8 @@ export default {
           this.currentType = 'sell'
       } */
       this.currentType = Object.keys(this.goods)[i]
+      this.$refs.tabcontrol1.currentIndex = i;
+      this.$refs.tabcontrol2.currentIndex = i;
       console.log( this.currentType);
       setTimeout(() => {
         this.$refs.Scroll.scroll.refresh();
@@ -126,6 +138,7 @@ export default {
     scrollPosition(position){
       //console.log(position);
       position.y<-1000?this.isShowBackTop = true:this.isShowBackTop = false
+       this.topCheck = - position.y > this.tabControloffsetTop;
     },
     loadMore(){
 
@@ -137,7 +150,10 @@ export default {
       }, 500);
       
     },
-    
+    swiperimgLoad(){
+      console.log(this.$refs.tabcontrol1.$el.offsetTop);
+      this.tabControloffsetTop = this.$refs.tabcontrol1.$el.offsetTop;
+    },
     
     
     
@@ -196,4 +212,10 @@ export default {
   left: 0;
   right: 0;
 }
+.tabcontrol{
+  position: relative;
+  z-index: 9;
+  top: -3px;
+}
+
 </style>
