@@ -69,7 +69,8 @@ export default {
       isShowBackTop:false,
       pullUpload:true,
       tabControloffsetTop:0,
-      topCheck:false
+      topCheck:false,
+      saveY:0
     }
   },
   created () {
@@ -94,11 +95,14 @@ export default {
       //refresh();
     })
   },
- /*  activated() {
-    //this.bcFunc 混入进来的
-    this.$bus.$on('goodsImgLoadEvent',()=>{
-      this.$refs.Scroll.scroll.refresh();
-    })
+  /* activated() {
+    console.log(this.saveY);
+    this.$refs.Scroll.scroll.scrollTo(0,this.saveY,0)
+    this.$refs.Scroll.scroll.refresh();
+  },
+  deactivated () {
+    //this.saveY = this.$refs.Scroll.scroll.position
+    console.log(this.$refs.Scroll.scroll.position);
   }, */
   methods: {
     /* debounce(func,delay){
@@ -215,7 +219,7 @@ export default {
 .tabcontrol{
   position: relative;
   z-index: 9;
-  top: -3px;
+  top: -4px;
 }
 
 </style>
