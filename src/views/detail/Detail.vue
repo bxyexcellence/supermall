@@ -7,6 +7,7 @@
       <detail-shop-info :shop ="shop"></detail-shop-info>
       <detail-goods-info :detailInfo ="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
       <detail-param-info :paramInfo="paramInfo"></detail-param-info>
+      <detail-comment-info :commentInfo=" commentInfo"></detail-comment-info>
     </Scroll>
   </div>
 </template>
@@ -18,12 +19,13 @@ import detailBaseInfo from './childComps/detailBaseInfo'
 import detailShopInfo from './childComps/detailShopInfo'
 import detailGoodsInfo from './childComps/detailGoodsInfo'
 import detailParamInfo from './childComps/detailParamInfo'
+import detailCommentInfo from './childComps/detailCommentInfo'
 
 import Scroll from 'components/common/scroll/Scroll'
 
 import { getDetail,Goods,Shop, GoodsParam } from 'network/detail'
 export default {
-  name: '',
+  name: 'Detail',
   data(){
     return {
       iid:null,
@@ -31,7 +33,8 @@ export default {
       goods:{},
       shop:{},
       detailInfo:{},
-      paramInfo:{}
+      paramInfo:{},
+      commentInfo:{}
     }
   },
   components:{
@@ -41,7 +44,8 @@ export default {
    detailShopInfo,
    Scroll,
    detailGoodsInfo,
-   detailParamInfo
+   detailParamInfo,
+   detailCommentInfo
   },
   created () {
     this.iid = this.$route.params.iid
@@ -53,6 +57,9 @@ export default {
       this.shop = new Shop(data.shopInfo)
       this.detailInfo = data.detailInfo
       this.paramInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
+      if(data.rate.cRate !== 0) {
+        this.commentInfo = data.rate.list[0]
+      }
     })
   },
   methods: {
