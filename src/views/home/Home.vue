@@ -40,6 +40,8 @@ import tabControl from 'components/content/tabControl/tabControl';
 import BackTop from 'components/content/backTop/BackTop';
 import Scroll from 'components/common/scroll/Scroll';
 
+import { itemListenerMixin } from 'common/mixin'
+
 import { getHomeMultidata,getHomeGoods } from "network/home";
 export default {
   name:'Home',
@@ -83,6 +85,7 @@ export default {
     }) */
 
   },
+  mixins: [itemListenerMixin],
   computed: {
     showGoods(){
       return this.goods[this.currentType].list
@@ -90,10 +93,7 @@ export default {
   },
   mounted () {
     //const refresh = this.debounce(this.$refs.Scroll&&this.$refs.Scroll.scroll.refresh)
-    this.$bus.$on('goodsImgLoadEvent',()=>{
-      this.$refs.Scroll&&this.$refs.Scroll.scroll.refresh();
-      //refresh();
-    })
+    
   },
   /* activated() {
     console.log(this.saveY);
@@ -104,6 +104,9 @@ export default {
     //this.saveY = this.$refs.Scroll.scroll.position
     console.log(this.$refs.Scroll.scroll.position);
   }, */
+  deactivated () {
+    this.$bus.$off('goodsImgLoadEvent', this.itemImgListener)
+  },
   methods: {
     /* debounce(func,delay){
       let timer = null
