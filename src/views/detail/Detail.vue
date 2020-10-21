@@ -1,13 +1,14 @@
 <template>
   <div id="detail">
-    <detail-nav-bar></detail-nav-bar>
-    <Scroll class="content" ref="scroll">
+    <detail-nav-bar @navClick="toTitle" class="navbar" ref="nav"></detail-nav-bar>
+    <Scroll class="content" ref="scroll" :probeType="3" @scroll="scrollPos">
       <detail-swiper :topImages ="topImages"></detail-swiper>
       <detail-base-info :goods ="goods"></detail-base-info>
       <detail-shop-info :shop ="shop"></detail-shop-info>
       <detail-goods-info :detailInfo ="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
-      <detail-param-info :paramInfo="paramInfo"></detail-param-info>
-      <detail-comment-info :commentInfo=" commentInfo"></detail-comment-info>
+      <detail-param-info :paramInfo="paramInfo" ref="param"></detail-param-info>
+      <detail-comment-info :commentInfo=" commentInfo" ref="comment"></detail-comment-info>
+      <goods-list :goods="recommends" ref="recommends"></goods-list>
     </Scroll>
   </div>
 </template>
@@ -22,8 +23,10 @@ import detailParamInfo from './childComps/detailParamInfo'
 import detailCommentInfo from './childComps/detailCommentInfo'
 
 import Scroll from 'components/common/scroll/Scroll'
+import GoodsList from 'components/content/goods/GoodsList'
+import { itemListenerMixin } from 'common/mixin'
 
-import { getDetail,Goods,Shop, GoodsParam } from 'network/detail'
+import { getDetail,getRecommend,Goods,Shop, GoodsParam } from 'network/detail'
 export default {
   name: 'Detail',
   data(){
@@ -34,7 +37,10 @@ export default {
       shop:{},
       detailInfo:{},
       paramInfo:{},
-      commentInfo:{}
+      commentInfo:{},
+      recommends:[],
+      themeTop:[],
+      currectIndex:0
     }
   },
   components:{
@@ -45,7 +51,8 @@ export default {
    Scroll,
    detailGoodsInfo,
    detailParamInfo,
-   detailCommentInfo
+   detailCommentInfo,
+   GoodsList
   },
   created () {
     this.iid = this.$route.params.iid
@@ -61,10 +68,44 @@ export default {
         this.commentInfo = data.rate.list[0]
       }
     })
+    getRecommend().then(res =>{
+      this.recommends = res.data.list
+    })
+  },
+  mixins: [itemListenerMixin],
+  deactivated() {
+    this.$bus.$off('goodsImgLoadEvent', this.itemImgListener)
   },
   methods: {
     imageLoad(){
       this.$refs.scroll.scroll.refresh()
+      this.themeTop = []
+      this.themeTop.push(0)
+      this.themeTop.push(this.$refs.param.$el.offsetTop)
+      this.themeTop.push(this.$refs.comment.$el.offsetTop)
+      this.themeTop.push(this.$refs.recommends.$el.offsetTop)
+      console.log(this.themeTop);
+    },
+    toTitle(i){
+      let themeHight = i === 0? -this.themeTop[i]:-this.themeTop[i]+44
+      this.$refs.scroll.scroll.scrollTo(0,themeHight,1000)
+    },
+    scrollPos(position){
+      let positionY = -position.y+44
+      let length = this.themeTop.length
+      for (let i = 0; i < length; i++) {
+        if(this.currectIndex !== i && i<length-1 && positionY >= this.themeTop[i] && positionY < this.themeTop[i+1]){
+          //console.log(i);
+          this.currectIndex = i
+          this.$refs.nav.currectIndex = this.currectIndex
+        }
+        else if(this.currectIndex !== i && i===length-1 && positionY >= this.themeTop[i]){
+          //console.log(i)
+          this.currectIndex = i
+          this.$refs.nav.currectIndex = this.currectIndex
+        }
+        
+      }
     }
   }
 }

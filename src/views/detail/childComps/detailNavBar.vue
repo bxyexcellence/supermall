@@ -28,6 +28,7 @@ export default {
   methods: {
     spanClick(i){
       this.currectIndex = i
+      this.$emit('navClick', i)
     },
     backClick(){
       this.$router.back()
