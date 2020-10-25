@@ -11,7 +11,7 @@
       <goods-list :goods="recommends" ref="recommends"></goods-list>
     </Scroll>
     <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
-    <detail-botton-bar></detail-botton-bar>
+    <detail-botton-bar @addCart="addCart"></detail-botton-bar>
   </div>
 </template>
 
@@ -118,6 +118,16 @@ export default {
     backClick(){
       this.$refs.scroll.scroll.scrollTo(0,0,500)
       //console.log(this.$refs.Scroll);
+    },
+    addCart(){
+      const product = {}
+      product.image = this.topImages[0]
+      product.title = this.goods.title
+      product.desc = this.goods.desc
+      product.price = this.goods.realPrice
+      product.iid = this.iid
+      console.log(product)
+      this.$store.dispatch('addCart', product)
     }
   }
 }
