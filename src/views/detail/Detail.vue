@@ -10,6 +10,8 @@
       <detail-comment-info :commentInfo=" commentInfo" ref="comment"></detail-comment-info>
       <goods-list :goods="recommends" ref="recommends"></goods-list>
     </Scroll>
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
+    <detail-botton-bar></detail-botton-bar>
   </div>
 </template>
 
@@ -21,6 +23,8 @@ import detailShopInfo from './childComps/detailShopInfo'
 import detailGoodsInfo from './childComps/detailGoodsInfo'
 import detailParamInfo from './childComps/detailParamInfo'
 import detailCommentInfo from './childComps/detailCommentInfo'
+import detailBottonBar from './childComps/detailBottonBar'
+import BackTop from 'components/content/backTop/BackTop'
 
 import Scroll from 'components/common/scroll/Scroll'
 import GoodsList from 'components/content/goods/GoodsList'
@@ -40,7 +44,8 @@ export default {
       commentInfo:{},
       recommends:[],
       themeTop:[],
-      currectIndex:0
+      currectIndex:0,
+      isShowBackTop:false
     }
   },
   components:{
@@ -52,7 +57,9 @@ export default {
    detailGoodsInfo,
    detailParamInfo,
    detailCommentInfo,
-   GoodsList
+   GoodsList,
+   detailBottonBar,
+   BackTop
   },
   created () {
     this.iid = this.$route.params.iid
@@ -91,6 +98,7 @@ export default {
       this.$refs.scroll.scroll.scrollTo(0,themeHight,1000)
     },
     scrollPos(position){
+      position.y<-1000?this.isShowBackTop = true:this.isShowBackTop = false
       let positionY = -position.y+44
       let length = this.themeTop.length
       for (let i = 0; i < length; i++) {
@@ -106,6 +114,10 @@ export default {
         }
         
       }
+    },
+    backClick(){
+      this.$refs.scroll.scroll.scrollTo(0,0,500)
+      //console.log(this.$refs.Scroll);
     }
   }
 }
